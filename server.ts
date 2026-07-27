@@ -693,7 +693,7 @@ app.post('/api/download/info', async (req, res) => {
           let absoluteMusic = musicUrl.startsWith('http') ? musicUrl : 'https://www.tikwm.com' + musicUrl;
           let musicTitle = resData.music_info?.title || '';
           directLinks.push({
-            quality: `${musicTitle}`,
+            quality: `Audio ${musicTitle}`,
             format: 'mp3',
             size: 'Beta',
             downloadUrl: `/api/download/file?title=${encodeURIComponent(videoTitle + ' - ' + musicTitle)}&format=mp3&platform=tiktok&url=${encodeURIComponent(absoluteMusic)}`,
