@@ -12,7 +12,7 @@ interface DownloadResultProps {
 
 const cleanOriginalSound = (text: string) => {
   if (!text) return '';
-  return text.replace(/^\s*original\s+sound\s*-\s*/i, '');
+  return text.replace(/^\s*s+\s*\s*/i, '');
 };
 
 const getYoutubeId = (url: string) => {
