@@ -782,7 +782,7 @@ app.post('/api/download/info', async (req, res) => {
 
         if (response.data && response.data.code === 0 && response.data.data) {
           const resData = response.data.data;
-          videoTitle = resData.title || `Tiktok Video by ${resData.author?.nickname || 'Creator'}`;
+          videoTitle = resData.title || `${resData.author?.nickname || 'Creator'}`;
           videoAuthor = resData.author?.nickname || videoAuthor;
           caption = resData.title || "";
           
