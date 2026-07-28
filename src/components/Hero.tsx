@@ -94,7 +94,7 @@ export default function Hero({ onExtract, loading, showToast }: HeroProps) {
       <div className="flex flex-wrap items-center justify-center gap-2 mb-6">
         <div className="inline-flex items-center gap-1.5 bg-[#DBEAFE] dark:bg-[#1E293B] text-[#1E3A8A] dark:text-blue-300 neo-border-thin px-3 py-1.5 rounded-[30px] text-xs font-black uppercase tracking-wider rotate-[-1deg] shadow-xs">
           <Sparkles size={14} className="text-[#1E3A8A] dark:text-blue-300" />
-          SAVETIK VERSI BETA V1.0
+          SAVETIK VERSI BETA V2
         </div>
       </div>
 
