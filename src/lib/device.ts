@@ -22,5 +22,9 @@ export const isApkOrWebView = (): boolean => {
   // 5. Override flags in localStorage for admin / testing purposes
   const forceApk = safeLocalStorage.getItem('savetik-force-apk-mode') === 'true';
 
-  return isCordova || isCapacitor || isAndroidWebView || isCrosswalk || hasAndroidInterface || forceApk;
+  // 6. Standalone / PWA installed mode detection
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                       (window.navigator as any).standalone === true;
+
+  return isCordova || isCapacitor || isAndroidWebView || isCrosswalk || hasAndroidInterface || forceApk || isStandalone;
 };
