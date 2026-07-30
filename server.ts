@@ -855,7 +855,7 @@ app.post('/api/download/info', async (req, res) => {
             directLinks.push({
               quality: `Audio ${musicTitle}`,
               format: 'mp3',
-              size: '4.5 MB',
+              size: '',
               downloadUrl: `/api/download/file?title=${encodeURIComponent(videoTitle + ' - ' + musicTitle)}&format=mp3&platform=tiktok&url=${encodeURIComponent(absoluteMusic)}`,
               directUrl: absoluteMusic
             });
@@ -1201,7 +1201,7 @@ app.post('/api/download/info', async (req, res) => {
             directLinks = [];
 
             spotifyResults.slice(0, 3).forEach((tr) => {
-              const audioLabel = tr.duration ? `Audio MP3 - ${tr.name} ${tr.duration}` : `Audio MP3 - ${tr.name}`;
+              const audioLabel = tr.duration ? `Audio Asli - ${tr.name} ${tr.duration}` : `Audio Asli - ${tr.name}`;
               directLinks.push({
                 quality: audioLabel,
                 format: 'mp3',
@@ -1217,7 +1217,7 @@ app.post('/api/download/info', async (req, res) => {
           } else if (oembedMeta) {
             directLinks = [
               {
-                quality: `Audio Original HQ`,
+                quality: ``,
                 format: 'mp3',
                 size: '',
                 downloadUrl: `/api/download/file?title=${encodeURIComponent(oembedMeta.title + ' - ' + oembedMeta.artists)}&format=mp3&platform=spotify&url=${encodeURIComponent(url)}`,
