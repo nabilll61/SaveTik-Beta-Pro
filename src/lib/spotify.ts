@@ -165,7 +165,7 @@ export async function getSpotifyOembed(spotifyUrl: string) {
         if (res.data) {
             return {
                 title: res.data.title || 'Spotify Track',
-                artists: res.data.author_name || 'Spotify Artist',
+                artists: res.data.author_name || '',
                 thumbnail: res.data.thumbnail_url || null,
                 html: res.data.html || null
             };
