@@ -602,7 +602,7 @@ export default function DownloadResult({ videoInfo, onClear, showToast }: Downlo
                   </button>
                 </div>
                 <div className="text-xs font-medium leading-relaxed text-neo-text opacity-90 whitespace-pre-line">
-                  <p className="italic">"{videoInfo.caption}"</p>
+                  <p className="italic">{videoInfo.caption}</p>
                 </div>
               </div>
             )}

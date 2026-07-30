@@ -7,7 +7,7 @@ interface HeroProps {
   showToast: (msg: string, type: 'success' | 'warning' | 'error') => void;
 }
 
-const PLATFORMS = ['TIKTOK', 'YOUTUBE', 'INSTAGRAM', '', 'CAPCUT', 'FACEBOOK'];
+const PLATFORMS = ['TIKTOK', 'YOUTUBE', 'INSTAGRAM', 'SPOTIFY', 'CAPCUT', 'FACEBOOK'];
 
 export default function Hero({ onExtract, loading, showToast }: HeroProps) {
   const [url, setUrl] = useState('');
@@ -36,7 +36,7 @@ export default function Hero({ onExtract, loading, showToast }: HeroProps) {
       } else if (urlLower.includes('instagram.com')) {
         setDetectedPlatform('INSTAGRAM');
       } else if (urlLower.includes('spotify.com')) {
-        setDetectedPlatform('');
+        setDetectedPlatform('SPOTIFY');
       } else if (urlLower.includes('capcut.com')) {
         setDetectedPlatform('CAPCUT');
       } else if (urlLower.includes('facebook.com') || urlLower.includes('fb.watch')) {
