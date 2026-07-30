@@ -128,12 +128,15 @@ export default function App() {
     const fetchMaintenanceStatus = async () => {
       try {
         const response = await fetch('/api/maintenance/status', { credentials: 'include' });
-        const text = await response.text();
-        if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
-          console.warn("Received HTML instead of JSON for maintenance status (auth redirect?)");
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          console.warn("Received non-JSON response for maintenance status (auth redirect or SPA fallback?)");
           return;
         }
-        const data = JSON.parse(text);
+        const data = await response.json();
         if (data && data.success) {
           setIsMaintenanceMode(data.active);
           setMaintenanceNotice(data.notice || '');
@@ -157,12 +160,15 @@ export default function App() {
     const fetchApkUpdateStatus = async () => {
       try {
         const response = await fetch('/api/apk-update/status', { credentials: 'include' });
-        const text = await response.text();
-        if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
-          console.warn("Received HTML instead of JSON for APK update status (auth redirect?)");
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          console.warn("Received non-JSON response for APK update status (auth redirect or SPA fallback?)");
           return;
         }
-        const data = JSON.parse(text);
+        const data = await response.json();
         if (data && data.success) {
           setApkUpdateConfig(data);
           if (data.active && isApkOrWebView()) {
