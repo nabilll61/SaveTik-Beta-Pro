@@ -618,7 +618,7 @@ export default function DownloadResult({ videoInfo, onClear, showToast }: Downlo
               title={isFavorite ? 'Hapus dari Favorit' : 'Simpan ke Playlist Favorit'}
             >
               <Bookmark size={16} className={isFavorite ? 'fill-black' : ''} strokeWidth={3} />
-              {isFavorite ? 'SIMPAN KE FAVORIT?' : 'TERSIMPAN DIFAVORIT ✅'}
+              {isFavorite ? 'TERSIMPAN DIFAVORIT ✅' : 'SIMPAN KE FAVORIT?'}
             </button>
 
 
