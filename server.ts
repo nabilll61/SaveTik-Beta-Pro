@@ -1174,7 +1174,7 @@ app.post('/api/download/info', async (req, res) => {
         if (!usedAlyaChan) {
           const oembedMeta = await getSpotifyOembed(url);
           if (oembedMeta) {
-            videoTitle = `${oembedMeta.title} - ${oembedMeta.artists}`;
+            videoTitle = `Judul Lagu - ${oembedMeta.title}`;
             if (oembedMeta.thumbnail) {
               videoThumbnail = oembedMeta.thumbnail;
             }
@@ -1191,7 +1191,7 @@ app.post('/api/download/info', async (req, res) => {
           if (spotifyResults && spotifyResults.length > 0) {
             const topTrack = spotifyResults[0];
             if (!oembedMeta) {
-              videoTitle = `${topTrack.name} - ${topTrack.artists}`;
+              videoTitle = ``;
               if (topTrack.thumbnail) {
                 videoThumbnail = topTrack.thumbnail;
               }
