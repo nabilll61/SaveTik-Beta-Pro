@@ -110,7 +110,7 @@ import * as cheerio from 'cheerio';
 import { ytmp3, ytmp4, extractVideoId } from './src/lib/youtube';
 import { igdl } from './src/lib/instagram';
 import { capcutDownload } from './src/lib/capcut';
-import { searchSpotify, getSpotifyOembed } from './src/lib/spotify';
+import { searchSpotify, getSpotifyOembed, SpotidownScraper } from './src/lib/spotify';
 import { facebookDownload } from './src/lib/facebook';
 
 // Setup basic server
@@ -1833,33 +1833,64 @@ app.get('/api/download/file', async (req, res) => {
     }
 
     let resolvedUrl = targetUrl;
-    // If Spotify track URL, resolve to real audio stream via Cobalt API or fallback to sample MP3
+    // If Spotify track URL, resolve to real audio stream via SpotidownScraper or fallback to Cobalt API
     if (targetUrl.includes('spotify.com') || targetUrl.includes('open.spotify')) {
       let resolvedOk = false;
+
+      // =========================================================================
+      // 🛠️ PERBAIKAN TERBARU / RECENT REPAIR START
+      // MASALAH: Integrasi Spotify via Cobalt sering dibatasi atau gagal (rate-limited).
+      // SOLUSI: Menggunakan SpotidownScraper baru sebagai resolver utama yang cepat dan stabil.
+      // =========================================================================
+
+      // 1. Try SpotidownScraper first (high speed, direct downloads)
       try {
-        const cobaltInstances = [
-          'https://api.cobalt.tools/api/json',
-          'https://cobalt.api.ryb.my.id/api/json',
-          'https://co.wuk.sh/api/json'
-        ];
-        for (const inst of cobaltInstances) {
-          try {
-            const resp = await axios.post(inst, {
-              url: targetUrl,
-              downloadMode: 'audio',
-              audioFormat: 'mp3'
-            }, {
-              headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-              timeout: 6000
-            });
-            if (resp.data && (resp.data.url || resp.data.audio)) {
-              resolvedUrl = resp.data.url || resp.data.audio;
-              resolvedOk = true;
-              break;
-            }
-          } catch (e) {}
+        const scraper = new SpotidownScraper();
+        const { tracks, sessionCookie } = await scraper.search(targetUrl);
+        if (tracks && tracks.length > 0) {
+          const track = tracks[0];
+          const links = await scraper.getDownloadLinks(track.form, sessionCookie);
+          if (links.mp3) {
+            resolvedUrl = links.mp3;
+            resolvedOk = true;
+            console.log(`[SPOTIFY DOWNLOAD] Successfully resolved direct MP3 link via SpotidownScraper: ${resolvedUrl}`);
+          }
         }
-      } catch (e) {}
+      } catch (spotErr: any) {
+        console.warn(`[SPOTIFY DOWNLOAD] SpotidownScraper resolution failed, trying Cobalt:`, spotErr.message || spotErr);
+      }
+
+      // 2. Fallback to Cobalt Instances if Spotidown failed
+      if (!resolvedOk) {
+        try {
+          const cobaltInstances = [
+            'https://api.cobalt.tools/api/json',
+            'https://cobalt.api.ryb.my.id/api/json',
+            'https://co.wuk.sh/api/json'
+          ];
+          for (const inst of cobaltInstances) {
+            try {
+              const resp = await axios.post(inst, {
+                url: targetUrl,
+                downloadMode: 'audio',
+                audioFormat: 'mp3'
+              }, {
+                headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+                timeout: 6000
+              });
+              if (resp.data && (resp.data.url || resp.data.audio)) {
+                resolvedUrl = resp.data.url || resp.data.audio;
+                resolvedOk = true;
+                break;
+              }
+            } catch (e) {}
+          }
+        } catch (e) {}
+      }
+
+      // =========================================================================
+      // 🛠️ PERBAIKAN TERBARU / RECENT REPAIR END
+      // =========================================================================
 
       if (!resolvedOk || resolvedUrl.includes('spotify.com')) {
         return res.status(400).send("Gagal mengurai track Spotify ini. Server pengurai sibuk, silakan coba sesaat lagi.");
