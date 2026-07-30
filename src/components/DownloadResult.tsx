@@ -12,7 +12,7 @@ interface DownloadResultProps {
 
 const cleanOriginalSound = (text: string) => {
   if (!text) return '';
-  return text.replace(/^\s*s+\s*\s*/i, '');
+  return text.replace(/^\s*original\s+sound\s*-\s*/i, '');
 };
 
 const getYoutubeId = (url: string) => {
@@ -143,16 +143,6 @@ export default function DownloadResult({ videoInfo, onClear, showToast }: Downlo
   const displayPreviewUrl = previewUrl || firstSlideUrl || videoInfo.thumbnail;
   
   let audioFormat = videoInfo.formats.find(f => f.format === 'mp3');
-  if (!audioFormat) {
-    audioFormat = {
-      quality: 'Audio',
-      format: 'mp3',
-      size: '',
-      downloadUrl: `/api/download/file?title=${encodeURIComponent(videoInfo.title + ' - Original Audio')}&format=mp3&platform=${videoInfo.platform}&url=${encodeURIComponent('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3')}`,
-      directUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
-    };
-    videoInfo.formats.push(audioFormat);
-  }
   const hasAudio = photoSlides.length > 0 || videoInfo.platform === 'spotify';
   const [showAudioPreview, setShowAudioPreview] = useState(hasAudio);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -212,15 +202,16 @@ export default function DownloadResult({ videoInfo, onClear, showToast }: Downlo
 
   useEffect(() => {
     const isSlides = photoSlides.length > 0;
+    const isSpotify = videoInfo.platform === 'spotify';
     if (audioFormat) {
-      setShowAudioPreview(isSlides);
+      setShowAudioPreview(isSlides || isSpotify);
     }
     setCurrentSlide(0);
-    setIsAudioPlaying(isSlides);
+    setIsAudioPlaying(isSlides || isSpotify);
     setCurrentTime(0);
     if (audioRef.current) {
       audioRef.current.currentTime = 0;
-      if (isSlides) {
+      if (isSlides || isSpotify) {
         audioRef.current.play().catch(err => console.log('Audio autoplay error:', err));
       } else {
         audioRef.current.pause();
@@ -447,7 +438,7 @@ export default function DownloadResult({ videoInfo, onClear, showToast }: Downlo
                   {/* Hidden native audio element */}
                   <audio 
                     ref={audioRef}
-                    src={audioFormat.directUrl || audioFormat.downloadUrl} 
+                    src={videoInfo.platform === 'spotify' ? (audioFormat.downloadUrl || audioFormat.directUrl) : (audioFormat.directUrl || audioFormat.downloadUrl)} 
                     autoPlay 
                     loop
                     onPlay={() => setIsAudioPlaying(true)}
@@ -521,9 +512,9 @@ export default function DownloadResult({ videoInfo, onClear, showToast }: Downlo
                   <div className="flex items-center justify-between text-[9px] font-mono font-black text-neo-text opacity-60 uppercase">
                     <span className="flex items-center gap-1">
                       <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping inline-block"></span>
-                      Background Music (Auto-Loop)
+                      {videoInfo.platform === 'spotify' ? 'Spotify Preview' : 'Background Music (Auto-Loop)'}
                     </span>
-                    <span>TikTok Audio</span>
+                    <span>{videoInfo.platform === 'spotify' ? 'Spotify Audio' : 'TikTok Audio'}</span>
                   </div>
                 </div>
               </div>
@@ -604,15 +595,15 @@ export default function DownloadResult({ videoInfo, onClear, showToast }: Downlo
                       navigator.clipboard.writeText(videoInfo.caption || '');
                       showToast('Caption berhasil disalin!', 'success');
                     }}
-                    className="flex items-center gap-1 bg-[#6366F1] text-white px-2 py-0.5 rounded-[4px] text-[9px] font-black hover:bg-[#4F46E5] transition-colors cursor-pointer"
+                    className="flex items-center gap-1 bg-[#6366F1] hover:bg-[#4F46E5] text-white px-2 py-0.5 rounded-[4px] text-[9px] font-black transition-colors cursor-pointer"
                   >
                     <Copy size={10} />
                     SALIN
                   </button>
                 </div>
-                <p className="text-xs font-medium line-clamp-3 leading-relaxed text-neo-text opacity-90 italic">
-                  {videoInfo.caption}
-                </p>
+                <div className="text-xs font-medium leading-relaxed text-neo-text opacity-90 whitespace-pre-line">
+                  <p className="italic">"{videoInfo.caption}"</p>
+                </div>
               </div>
             )}
 
@@ -627,7 +618,7 @@ export default function DownloadResult({ videoInfo, onClear, showToast }: Downlo
               title={isFavorite ? 'Hapus dari Favorit' : 'Simpan ke Playlist Favorit'}
             >
               <Bookmark size={16} className={isFavorite ? 'fill-black' : ''} strokeWidth={3} />
-              {isFavorite ? 'SIMPAN KE BOOKMARK' : 'TERSIMPAN DI FAVORIT'}
+              {isFavorite ? 'SIMPAN KE FAVORIT?' : 'TERSIMPAN DIFAVORIT ✅'}
             </button>
 
 
@@ -686,7 +677,7 @@ export default function DownloadResult({ videoInfo, onClear, showToast }: Downlo
                       {downloadingUrl === fmt.downloadUrl ? (
                         <span className="flex items-center gap-1.5 justify-center">
                           <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                          LOADING...
+                          PROSES...
                         </span>
                       ) : (
                         "DOWNLOAD"
