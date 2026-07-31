@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { X, Video, Headphones, ArrowRight, Eye, Heart, Share2, Copy, Bookmark, Play, Pause, Volume2, VolumeX } from 'lucide-react';
 import { VideoInfo } from '../types';
 import VideoPlayer from './VideoPlayer';
+import AudioWaveformVisualizer from './AudioWaveformVisualizer';
 import { safeLocalStorage } from '../lib/safeStorage';
 
 interface DownloadResultProps {
@@ -457,42 +458,42 @@ export default function DownloadResult({ videoInfo, onClear, showToast }: Downlo
                     className="hidden"
                   />
 
-                  {/* Custom Neobrutalist Audio Controller - Completely removes white native controller background */}
-                  <div className="flex items-center gap-3 bg-neo-bg dark:bg-[#1f1a24] neo-border p-3 rounded-lg">
-                    {/* Play / Pause Toggle Button */}
-                    <button 
-                      onClick={toggleAudioPlay}
-                      className="w-9 h-9 bg-[#6366F1] hover:bg-[#5558e6] text-white rounded-full flex items-center justify-center neo-border-thin active:translate-y-0.5 cursor-pointer flex-shrink-0 transition-all"
-                      title={isAudioPlaying ? "Pause" : "Play"}
-                    >
-                      {isAudioPlaying ? (
-                        <Pause size={14} fill="currentColor" strokeWidth={3} className="text-white" />
-                      ) : (
-                        <Play size={14} fill="currentColor" strokeWidth={3} className="text-white ml-0.5" />
-                      )}
-                    </button>
+                  {/* Audio Waveform Visualizer Graphic */}
+                  <AudioWaveformVisualizer
+                    currentTime={currentTime}
+                    duration={duration || 1}
+                    isPlaying={isAudioPlaying}
+                    audioRef={audioRef}
+                    title={cleanOriginalSound(getAudioTitle())}
+                    accentColor={videoInfo.platform === 'spotify' ? '#1DB954' : '#6366F1'}
+                    onSeek={(seekTime) => {
+                      if (audioRef.current) {
+                        audioRef.current.currentTime = seekTime;
+                        setCurrentTime(seekTime);
+                      }
+                    }}
+                  />
 
-                    {/* Time Counter */}
-                    <span className="text-[11px] font-mono font-black text-neo-text min-w-[64px] text-center opacity-85 select-none">
-                      {formatTime(currentTime)} / {formatTime(duration)}
-                    </span>
+                  {/* Custom Neobrutalist Audio Controller Buttons */}
+                  <div className="flex items-center justify-between gap-3 bg-neo-bg dark:bg-[#1f1a24] neo-border p-2.5 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      {/* Play / Pause Toggle Button */}
+                      <button 
+                        onClick={toggleAudioPlay}
+                        className="w-8 h-8 bg-[#6366F1] hover:bg-[#5558e6] text-white rounded-full flex items-center justify-center neo-border-thin active:translate-y-0.5 cursor-pointer flex-shrink-0 transition-all"
+                        title={isAudioPlaying ? "Pause" : "Play"}
+                      >
+                        {isAudioPlaying ? (
+                          <Pause size={13} fill="currentColor" strokeWidth={3} className="text-white" />
+                        ) : (
+                          <Play size={13} fill="currentColor" strokeWidth={3} className="text-white ml-0.5" />
+                        )}
+                      </button>
 
-                    {/* Progress Slider Track */}
-                    <div 
-                      ref={progressBarRef}
-                      onClick={handleProgressBarClick}
-                      className="relative flex-1 h-3 bg-neo-card neo-border-thin rounded-full cursor-pointer overflow-hidden group select-none"
-                    >
-                      {/* Played Track Fill */}
-                      <div 
-                        className="absolute top-0 left-0 h-full bg-[#6366F1] transition-all duration-100"
-                        style={{ width: `${(currentTime / (duration || 1)) * 100}%` }}
-                      />
-                      {/* Custom indicator line inside track */}
-                      <div 
-                        className="absolute top-0 h-full w-0.5 bg-white opacity-80"
-                        style={{ left: `${(currentTime / (duration || 1)) * 100}%` }}
-                      />
+                      {/* Time Counter */}
+                      <span className="text-[11px] font-mono font-black text-neo-text opacity-85 select-none">
+                        {formatTime(currentTime)} / {formatTime(duration)}
+                      </span>
                     </div>
 
                     {/* Mute/Unmute Button */}
@@ -512,7 +513,7 @@ export default function DownloadResult({ videoInfo, onClear, showToast }: Downlo
                   <div className="flex items-center justify-between text-[9px] font-mono font-black text-neo-text opacity-60 uppercase">
                     <span className="flex items-center gap-1">
                       <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping inline-block"></span>
-                      {videoInfo.platform === 'spotify' ? 'Spotify Preview' : 'Background Music (Auto-Loop)'}
+                      {videoInfo.platform === 'spotify' ? 'Spotify Track Preview' : 'Background Music (Auto-Loop)'}
                     </span>
                     <span>{videoInfo.platform === 'spotify' ? 'Spotify Audio' : 'TikTok Audio'}</span>
                   </div>

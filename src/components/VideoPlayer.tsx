@@ -18,6 +18,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, poster, onLoadedMetadata
       if (isPlaying) {
         videoRef.current.pause();
       } else {
+        videoRef.current.volume = 1.0;
         videoRef.current.play().catch(() => {});
       }
       setIsPlaying(!isPlaying);
@@ -26,8 +27,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, poster, onLoadedMetadata
 
   const toggleMute = () => {
     if (videoRef.current) {
-      videoRef.current.muted = !isMuted;
-      setIsMuted(!isMuted);
+      const nextMuted = !isMuted;
+      videoRef.current.muted = nextMuted;
+      setIsMuted(nextMuted);
     }
   };
 
@@ -35,6 +37,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, poster, onLoadedMetadata
     const video = videoRef.current;
     if (!video) return;
 
+    video.volume = 1.0;
     const handlePlay = () => setIsPlaying(true);
     const handlePause = () => setIsPlaying(false);
 
@@ -57,6 +60,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, poster, onLoadedMetadata
         ref={videoRef}
         src={src}
         poster={poster}
+        muted={isMuted}
         className="w-full h-full object-cover"
         playsInline
         preload="metadata"
@@ -65,6 +69,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, poster, onLoadedMetadata
         onContextMenu={(e) => e.preventDefault()}
         onLoadedMetadata={(e) => {
           const video = e.currentTarget;
+          video.volume = 1.0;
           if (onLoadedMetadata) {
             onLoadedMetadata(video.videoWidth, video.videoHeight);
           }
