@@ -1,0 +1,46 @@
+{
+  "collections": [
+    {
+      "collectionId": "admin",
+      "documents": [
+        {
+          "documentId": "config",
+          "fields": {
+            "password": "admin",
+            "maintenance": {
+              "active": false,
+              "badge": "SEDANG PERBAIKAN • FITUR",
+              "title": "Sistem Dalam Perbaikan",
+              "notice": "Aplikasi SaveTik sedang dalam perbaikan berkala untuk peningkatan server. Silakan coba beberapa saat lagi",
+              "endTime": 0
+            },
+            "apkUpdate": {
+              "active": false,
+              "version": "2.0.0",
+              "title": "SaveTik Update!!",
+              "notice": "Pembaruan Tersedia Segera Update Versi Neww",
+              "changelog": ["SaveTik-Beta All Download Media"],
+              "downloadUrl": "https://www.nabil-official.web.id/public/SavetTik-Beta-v2.0.0.apk",
+              "forceUpdate": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "collectionId": "analytics",
+      "documents": [
+        {
+          "documentId": "global_stats",
+          "fields": {
+            "totalHits": 0,
+            "platforms": {},
+            "os": {},
+            "browsers": {},
+            "regions": {}
+          }
+        }
+      ]
+    }
+  ]
+}
